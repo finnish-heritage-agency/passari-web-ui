@@ -1,0 +1,35 @@
+.frozen-object-table {
+    table-layout: fixed;
+}
+
+.frozen-object-table thead tr th:nth-child(1) {
+    width: 10%
+}
+
+.frozen-object-table thead tr th:nth-child(2) {
+    width: 30%;
+}
+
+.frozen-object-table tbody tr th:nth-child(2) {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.frozen-object-table tbody tr th:nth-child(4) {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.frozen-object-table thead tr th:nth-child(3) {
+    width: 10%
+}
+
+.frozen-object-table thead tr th:nth-child(4) {
+    width: 30%
+}
+
+.frozen-object-table thead tr th:nth-child(5) {
+    width: 20%
+}

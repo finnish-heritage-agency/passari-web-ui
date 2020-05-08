@@ -1,0 +1,20 @@
+.report-container {
+    height: 80vh;
+    bottom-padding: 10px;
+}
+
+iframe.report-content {
+    border: none;
+    width: 100%;
+    height: 100%;
+}
+
+pre.report-content {
+    width: 100%;
+    height: 100%;
+    white-space: pre-wrap;
+}
+
+.sip-reports-app {
+    padding-bottom: 10px;
+}

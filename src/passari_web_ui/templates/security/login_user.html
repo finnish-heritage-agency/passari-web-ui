@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock title %}
+
+{% block content %}
+    {{ macros.content_title("Login") }}
+    <form method="POST" action="{{ url_for_security('login') }}" name="login_user_form">
+        {{ login_user_form.hidden_tag() }}
+        {{ macros.render_field(login_user_form.email) }}
+        {{ macros.render_field(login_user_form.password) }}
+        {{ macros.render_field(login_user_form.remember) }}
+        <input class="btn btn-primary" type="submit" value="Login"/>
+    </form>
+{% endblock content %}

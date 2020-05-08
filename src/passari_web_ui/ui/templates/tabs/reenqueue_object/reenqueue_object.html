@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Re-enqueue object{% endblock title %}
+
+{% block content %}
+    {{ macros.content_title("Re-enqueue object") }}
+    <div class="alert alert-secondary">
+        Re-enqueue a single object that was rejected by the Digital Preservation service.
+    </div>
+    <form method="POST" action="{{ url_for('ui.reenqueue_object') }}">
+        {{ form.csrf_token }}
+        {{ macros.render_field(form.object_id) }}
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        <button class="btn btn-primary" type="submit">Re-enqueue</button>
+    </form>
+{% endblock content %}

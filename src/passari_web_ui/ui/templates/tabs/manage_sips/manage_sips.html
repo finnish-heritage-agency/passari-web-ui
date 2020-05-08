@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Manage SIPs{% endblock %}
+
+{% block content %}
+    {{ macros.content_title("Manage SIPs") }}
+    <div class="alert alert-secondary">
+        View SIPs and the related logs and preservation reports. Rejected SIPs can be re-enqueued.
+    </div>
+    <div id="manage_sips_app">
+        {% raw %}
+            <!-- Search bar -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <b-form-input
+                            v-model="searchQuery"
+                            @input="searchQueryChanged"
+                            @keydown="searchQueryPressed"
+                            type="text"
+                            placeholder="Search by filename, title or object ID"></b-form-input>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-check form-check-inline">
+                        <b-form-checkbox
+                            v-model="onlyLatestPackages"
+                            @input="updateResults">
+                            Only latest package for each object
+                        </b-form-checkbox>
+                    </div>
+                    <label><b>Display:</b></label>
+                    <div class="form-check form-check-inline">
+                        <b-form-checkbox
+                            v-model="showPreserved"
+                            @input="updateResults">
+                            Preserved
+                        </b-form-checkbox>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <b-form-checkbox
+                            v-model="showRejected"
+                            @input="updateResults">
+                            Rejected
+                        </b-form-checkbox>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <b-form-checkbox
+                            v-model="showCancelled"
+                            @input="updateResults">
+                            Cancelled
+                        </b-form-checkbox>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <b-form-checkbox
+                            v-model="showProcessing"
+                            @input="updateResults">
+                            In progress
+                        </b-form-checkbox>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <!-- Search contents -->
+            <div v-if="results.length > 0" class="row">
+                <div class="col-md-12">
+                    <table class="view-processed-sips-table table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Filename</th>
+                                <th>Status</th>
+                                <th>Title</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody v-for="result in results">
+                            <tr>
+                                <th><pre>{{ result.filename }}</pre></th>
+                                <th>
+                                    <!-- Preservation status -->
+                                    <span v-if="result.status == 'preserved'"
+                                          class="badge badge-success">
+                                        Preserved
+                                    </span>
+                                    <span v-else-if="result.status == 'rejected'"
+                                          class="badge badge-danger">
+                                        Rejected
+                                    </span>
+                                    <span v-else-if="result.status == 'cancelled'"
+                                          class="badge badge-warning">
+                                        Cancelled
+                                    </span>
+                                    <span v-else-if="result.status == 'processing'"
+                                          class="badge badge-info">
+                                        In progress
+                                    </span>
+                                    <!-- Workflow status -->
+                                    <span v-if="result.queues.includes('download_object')"
+                                          class="badge badge-primary">
+                                        Download object
+                                    </span>
+                                    <span v-if="result.queues.includes('create_sip')"
+                                          class="badge badge-primary">
+                                        Create SIP
+                                    </span>
+                                    <span v-if="result.queues.includes('submit_sip')"
+                                          class="badge badge-primary">
+                                        Submit SIP
+                                    </span>
+                                    <span v-if="result.queues.length == 0 && result.uploaded && result.status == 'processing'"
+                                          class="badge badge-primary">
+                                        Submitted
+                                    </span>
+                                    <span v-if="result.queues.includes('confirm_sip')"
+                                          class="badge badge-primary">
+                                        Confirm SIP
+                                    </span>
+                                    <span v-if="result.queues.includes('failed')"
+                                          class="badge badge-danger">
+                                        Failed
+                                    </span>
+                                </th>
+                                <th :title="result.title">
+                                    {{ result.title }}
+                                </th>
+                                <th>
+                                    <a :href="viewUrlForPackage(result.id)"
+                                        class="btn btn-sm btn-primary">
+                                        <i class="oi oi-eye"></i>
+                                        View
+                                    </a>
+                                    <a href="#" class="btn btn-sm btn-primary"
+                                        @click="openReenqueueModal(result)"
+                                        v-if="result.can_reenqueue">
+                                        <i class="oi oi-loop-circular"></i>
+                                        Re-enqueue
+                                    </a>
+                                    <a :href="`${MUSEUMPLUS_UI_URL}/Object/${result.object_id}`"
+                                       target="_blank"
+                                       class="btn btn-sm btn-info">
+                                        <i class="oi oi-link-intact"></i> View in MuseumPlus
+                                    </a>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div v-else>
+                <p>No search results found</p>
+            </div>
+            <!-- Pagination -->
+            <div class="row">
+                <div class="col-md-12">
+                    <p v-if="resultCount">
+                        {{ resultCount }} result(s) found
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <nav>
+                        <ul class="pagination">
+                            <li :class="pageItemClassForPage(pageNumber)" v-for="pageNumber in pageNumbers">
+                                <a v-if="pageNumber" class="page-link" href="#" @click="changePage(pageNumber)">
+                                    {{ pageNumber }}
+                                </a>
+                                <a v-else class="page-link disabled" href="#">…</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <!-- Re-enqueue object: modal -->
+            <b-modal id="reenqueue_object_modal" :title="`Re-enqueue object ${packageToReenqueue.object_id}`"
+                     @ok="reenqueueObjectFromModal"
+                     :no-close-on-backdrop="reenqueueInProgress"
+                     :no-close-on-esc="reenqueueInProgress"
+                     :hide-header-close="true"
+                     :busy="reenqueueInProgress">
+                <p>You are about to re-enqueue object {{ packageToReenqueue.object_id }}. The latest package for this object is <b>{{ packageToReenqueue.filename }}</b>.</p>
+                <p>Are you sure?</p>
+            </b-modal>
+            <!-- Re-enqueue object: error modal -->
+            <b-modal id="reenqueue_object_error_modal"
+                     :title="`Re-enqueueing the object ${packageToReenqueue.object_id} failed`"
+                     :ok-only="true">
+                <p>Could not re-enqueue object {{ packageToReenqueue.object_id }}. The following error was provided:</p>
+                <pre>{{ reenqueueError }}</pre>
+            </b-modal>
+        {% endraw %}
+    </div>
+{% endblock content %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-vue.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('ui.static', filename='css/view-processed-sips.css') }}">
+{% endblock extra_head %}
+
+{% block post_content %}
+    <script src="{{ url_for('static', filename='js/vue.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-vue.min.js') }}"></script>
+    <script src="{{ url_for('ui.static', filename='js/manage_sips.js') }}"></script>
+{% endblock post_content %}

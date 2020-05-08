@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Freeze objects{% endblock title %}
+
+{% block content %}
+    {{ macros.content_title("Freeze objects") }}
+    <div class="alert alert-secondary">
+        Freeze objects to prevent them from being preserved. This can be done if the object is known to fail preservation at the time. Objects in the workflow cannot be frozen until the corresponding jobs have failed.
+    </div>
+    <form method="POST" action="{{ url_for('ui.freeze_objects') }}">
+        {{ form.csrf_token }}
+        {{ macros.render_field(form.reason) }}
+        {{
+            macros.render_field(
+                form.object_ids,
+                placeholder="Insert each object ID into its own line"
+            )
+        }}
+        {% if error %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        <button class="btn btn-primary" type="submit">Freeze</button>
+    </form>
+{% endblock content %}

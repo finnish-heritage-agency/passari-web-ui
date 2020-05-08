@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Enqueue objects{% endblock title %}
+
+{% block content %}
+    {{ macros.content_title("Enqueue objects") }}
+    <div class="alert alert-secondary">
+        Enqueue new objects to the preservation workflow. Given amount of objects are enqueued into the workflow, starting with the oldest objects that are pending preservation.
+    </div>
+    <form method="POST" action="{{ url_for('ui.enqueue_objects') }}">
+        {{ form.csrf_token }}
+        {{
+            macros.render_field(
+                form.object_count,
+                label="How many objects to enqueue (<b>" ~ available_count ~ "</b> are available)",
+                min=1,
+                max=available_count
+            )
+        }}
+        <button class="btn btn-primary" type="submit">Enqueue</button>
+    </form>
+{% endblock content %}

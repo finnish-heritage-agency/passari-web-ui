@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Overview{% endblock title %}
+
+{% block content %}
+    {{ macros.content_title("Overview") }}
+    <div id="overview_app">
+        {% raw %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="progress">
+                    <template v-for="step in stepsAsArray">
+                        <div class="progress-bar"
+                             v-bind:id="`progress_${step.state}`"
+                             v-bind:style="{ width: (step.count / totalCount)*100.0 + '%'}"
+                             v-bind:class="[hoveringState == step.state ? `progress-${step.state.replace('_', '-')}-hover` : `progress-${step.state.replace('_', '-')}`]">
+                        </div>
+                        <b-tooltip v-bind:target="`progress_${step.state}`"
+                                   v-bind:title="`${step.state}: ${step.count} / ${totalCount}`">
+                        </b-tooltip>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div v-for="step in stepInfoElements" class="col-md-3 col-sm-4">
+                <div class="media step-info-box" v-if="steps[step.state]">
+                    <span v-bind:class="`step-info-pill border border-0 rounded-pill progress-${step.state.replace('_', '-')}`"
+                          v-on:mouseover="hoverState(step.state)"
+                          v-on:mouseleave="hoverState(null)"></span>
+                    <div class="media-body">
+                        <h5 class="mt-0"
+                            v-on:mouseover="hoverState(step.state)"
+                            v-on:mouseleave="hoverState(null)">
+                            {{ step.title }}
+                            <small>{{ ((steps[step.state].count / totalCount) * 100.0).toFixed(2) }}%</small>
+                        </h5>
+                        <strong>{{ steps[step.state].count }}</strong> / {{ totalCount }}
+                        <div>{{ step.description }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endraw %}
+    </div>
+{% endblock content %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-vue.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for("ui.static", filename="css/overview.css") }}">
+{% endblock extra_head %}
+
+{% block post_content %}
+    <script src="{{ url_for('static', filename='js/vue.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-vue.min.js') }}"></script>
+    <script src="{{ url_for('ui.static', filename='js/overview.js') }}"></script>
+{% endblock post_content %}

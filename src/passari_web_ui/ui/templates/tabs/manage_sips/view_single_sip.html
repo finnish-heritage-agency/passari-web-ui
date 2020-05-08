@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}{{ package.sip_filename }}{% endblock %}
+
+{% block content %}
+    {{ macros.content_title("SIP: " ~ package.sip_filename) }}
+    <div class="alert alert-secondary">
+        View logs and the preservation report for a SIP.
+    </div>
+    {% with messages = get_flashed_messages(category_filter=["view_single_sip"]) %}
+        {# Success message #}
+        {% if messages %}
+            <div class="alert alert-success">
+                {% for msg in messages %}
+                    <div>{{ msg }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% with messages = get_flashed_messages(category_filter=["view_single_sip_error"]) %}
+        {# Error message #}
+        {% if messages %}
+            <div class="alert alert-danger">
+                {% for msg in messages %}
+                    <div>{{ msg }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <table class="table">
+        <tbody>
+            <tr>
+                <th scope="row">Name</th>
+                <th>{{ package.museum_object.title }}</th>
+            </tr>
+            <tr>
+                <th scope="row">Created</th>
+                <th>{{ package.created_date }}</th>
+            </tr>
+            <tr>
+                <th scope="row">Status</th>
+                <th>
+                    <h5>
+                        {% if package.preserved %}
+                            <span class="badge badge-success">Preserved</span>
+                        {% elif package.rejected %}
+                            <span class="badge badge-danger">Rejected</span>
+                        {% elif package.cancelled %}
+                            <span class="badge badge-warning">Cancelled</span>
+                        {% else %}
+                            <span class="badge badge-info">In progress</span>
+                        {% endif %}
+                    </h5>
+                </th>
+            </tr>
+            {% if can_reenqueue %}
+                <tr>
+                    <th scope="row">Actions</th>
+                    <th>
+                        <form method="post" action="{{ url_for('ui.view_single_sip_reenqueue', package_id=package.id) }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="oi oi-loop-circular"></i> Re-enqueue
+                            </button>
+                        </form>
+                    </th>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    <div id="sip_reports_app" class="sip-reports-app">
+        {% raw %}
+            <b-card v-if="logFilenames.length > 0" no-body>
+                <b-tabs pills card vertical @input="loadLogFileForTab">
+                    <b-tab :title="logFilename"
+                           v-for="logFilename in logFilenames"
+                           v-bind:key="logFilename">
+                        <div class="report-container">
+                            <template v-if="logContents[logFilename]">
+                                <!-- Embed HTML documents as-is -->
+                                <iframe class="report-content" v-if="logFilename.endsWith('.html')"
+                                        :src="logBlobURLs[logFilename]">
+                                </iframe>
+                                <!-- Other log files as plain text -->
+                                <pre class="report-content" v-else>{{ logContents[logFilename] }}</pre>
+                            </template>
+                            <div v-else class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </b-tab>
+                </b-tabs>
+            </b-card>
+            <div class="alert alert-info" v-else>
+                <strong>No logs found.</strong>
+                No log files were found for this SIP. They might not exist yet or have been removed.
+            </div>
+        {% endraw %}
+    </div>
+{% endblock content %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{{ url_for('ui.static', filename='css/view-single-sip.css') }}">
+{% endblock extra_head %}
+
+{% block inline_js %}
+    var sipFilename = "{{ package.sip_filename }}";
+    var logFilenames = {{ log_filenames|tojson }};
+{% endblock inline_js %}
+
+{% block post_content %}
+    <script src="{{ url_for('static', filename='js/vue.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap-vue.min.js') }}"></script>
+    <script src="{{ url_for('ui.static', filename='js/view_single_sip.js') }}"></script>
+{% endblock post_content %}

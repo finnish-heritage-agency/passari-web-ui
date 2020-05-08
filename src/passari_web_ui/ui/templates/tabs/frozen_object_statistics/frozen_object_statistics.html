@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Frozen object statistics{% endblock title %}
+
+{% block content %}
+    {{ macros.content_title("Frozen object statistics") }}
+    <div class="alert alert-secondary">
+        View list of freeze reasons sorted by count of corresponding objects.
+    </div>
+    {% if reason_counts %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Freeze reason</th>
+                    <th>Count</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reason, count in reason_counts %}
+                    <tr>
+                        <th>{{ reason }}</th>
+                        <th>{{ count }}</th>
+                        <th>
+                            <a href="{{ url_for('ui.unfreeze_objects', reason=reason) }}"
+                               class="btn btn-sm btn-primary">
+                                <i class="oi oi-lock-unlocked"></i>
+                                Unfreeze
+                            </a>
+                        </th>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info">
+            <strong>No objects have been frozen</strong>
+        </div>
+    {% endif %}
+{% endblock content %}

@@ -1,0 +1,62 @@
+{% macro content_title(title) %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">{{ title }}</h1>
+    </div>
+{% endmacro %}
+
+{% macro render_field(field) %}
+    {% if field.type == "BooleanField" %}
+        {# Boolean field with 'form-group form-check' container #}
+        <div class="form-group form-check">
+            {% set form_class="form-check-input is-invalid" if field.errors else "form-check-input" %}
+            <input type="checkbox" class="{{ form_class }}"
+                   id="{{ field.id }}"
+                   name="{{ field.name }}">
+            <label class="form-check-label" for="{{ field.id }}">{{ kwargs.get("label", field.label.text)|safe }}</label>
+            {% if kwargs.get("description", field.description) %}
+                <small class="form-text">{{ kwargs.get("description", field.description) }}</small>
+            {% endif %}
+        </div>
+    {% else %}
+        {# Generic container for other input types #}
+        <div class="form-group">
+            <label for="{{ field.id }}">{{ kwargs.get("label", field.label.text)|safe }}</label>
+            {% set form_class="form-control is-invalid" if field.errors else "form-control" %}
+            {% if field.type == "StringField" %}
+                <input class="{{ form_class }}" type="text"
+                       name="{{ field.name }}"
+                       placeholder="{{ kwargs.get("placeholder", "") }}"
+                       value="{% if field.data is not none %}{{ field.data }}{% endif %}">
+            {% elif field.type == "PasswordField" %}
+                <input class="{{ form_class }}" type="password"
+                       name="{{ field.name }}"
+                       placeholder="{{ kwargs.get("placeholder", "") }}">
+            {% elif field.type == "BooleanField" %}
+                <input class="{{ form_class }}" type="checkbox"
+                       name="{{ field.name }}">
+            {% elif field.type == "IntegerField" %}
+                <input class="{{ form_class }}" type="number"
+                       name="{{ field.name }}"
+                       min="{{ kwargs.get("min", 0) }}"
+                       max="{{ kwargs.get("max", 2**64) }}"
+                       step="{{ kwargs.get("step", 1) }}">
+            {% elif field.type in ("TextAreaField", "MultipleObjectIDField") %}
+                <textarea class="{{ form_class }}"
+                          name="{{ field.name }}"
+                          placeholder="{{ kwargs.get("placeholder", "") }}">
+                    {%- if field.data is not none %}{{ field.data }}{% endif -%}
+                </textarea>
+            {% endif %}
+            {% if kwargs.get("description", field.description) %}
+                <small class="form-text">{{ kwargs.get("description", field.description) }}</small>
+            {% endif %}
+            {% if field.errors %}
+                <div class="invalid-feedback">
+                    {% for error in field.errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endmacro %}

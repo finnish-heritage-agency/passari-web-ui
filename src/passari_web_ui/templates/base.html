@@ -1,0 +1,101 @@
+{% import "macros.html" as macros %}
+<!doctype html>
+<html lang="en">
+    {% block head %}
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/open-iconic-bootstrap.css') }}">
+        <title>{% block title %}Title here{% endblock title %} - Passari</title>
+        {% block extra_head %}
+        {% endblock extra_head %}
+    </head>
+    {% endblock head %}
+    <body>
+        <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+            <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ url_for('ui.overview') }}">Passari</a>
+            {% if current_user.is_authenticated %}
+                <ul class="navbar-nav col-sm-1 col-md-1 align-items-end"></ul>
+                <ul class="navbar-nav mr-auto"></ul>
+                <ul class="navbar-nav">
+                    <span class="navbar-text">
+                        Logged in as <i>{{ current_user.email }}</i>
+                    </span>
+                </ul>
+                <ul class="navbar-nav px-3">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('security.change_password') }}">Change password</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav px-3">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('security.logout') }}">Logout</a>
+                    </li>
+                </ul>
+            {% endif %}
+        </nav>
+        <div class="container-fluid">
+            <div class="row">
+                {% include "sidebar.html" %}
+                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                    {% block content %}{% endblock content %}
+                </main>
+            </div>
+        </div>
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/feather.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/underscore-min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/sugar-1.2.1.min.js') }}"></script>
+        <script nonce="{{ csp_nonce() }}">
+            (function() {
+                "use strict"
+
+                feather.replace();
+            })();
+
+            var MUSEUMPLUS_UI_URL = "{{ config.MUSEUMPLUS_UI_URL }}";
+
+            var URLMap = {
+                "api.navbar_stats": "{{ url_for('api.navbar_stats') }}",
+                "api.overview_stats": "{{ url_for('api.overview_stats') }}",
+                "api.list_frozen_objects": "{{ url_for('api.list_frozen_objects') }}",
+                "api.reenqueue_object": "{{ url_for('api.reenqueue_object') }}",
+                "api.unfreeze_objects": "{{ url_for('api.unfreeze_objects') }}",
+                "api.list_sips": "{{ url_for('api.list_sips') }}",
+                "api.get_log_content": "{{ url_for('api.get_log_content') }}",
+                "ui.manage_sips": "{{ url_for('ui.manage_sips') }}",
+                "ui.manage_sips.view": (
+                    "{{ url_for('ui.view_single_sip', package_id='PACKAGE_ID') }}"
+                )
+            };
+            // Update URL maps to use the correct origin
+            for (let [key, value] of Object.entries(URLMap)) {
+                URLMap[key] = `${window.location.origin}${value}`;
+            }
+
+            async function apiFetch(url, options) {
+                if (options === undefined) {
+                    options = {};
+                }
+
+                if (!("headers" in options)) {
+                    options["headers"] = new Headers();
+                }
+
+                options["headers"].append("X-CSRFToken", "{{ csrf_token() }}");
+
+                return await fetch(url, options);
+            }
+        </script>
+        <script src="{{ url_for('ui.static', filename='js/navbar.js') }}"></script>
+        <script type="text/javascript" nonce="{{ csp_nonce() }}">
+        {% block inline_js %}{% endblock inline_js %}
+        </script>
+        {% block post_content %}{% endblock post_content %}
+    </body>
+</html>

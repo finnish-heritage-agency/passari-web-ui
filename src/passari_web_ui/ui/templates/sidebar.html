@@ -1,0 +1,130 @@
+<nav class="col-md-2 d-none d-md-block bg-light sidebar">
+    <div class="sidebar-sticky">
+        {% if current_user.is_authenticated %}
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "ui.overview" }}"
+                       href="{{ url_for('ui.overview') }}">
+                        <span data-feather="home"></span>
+                        Overview
+                    </a>
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "ui.system_status" }}"
+                       href="{{ url_for('ui.system_status') }}">
+                        <span data-feather="activity"></span>
+                        System status
+                        {% if g.system_status.is_any_overdue %}
+                            <span class="badge badge-danger">!</span>
+                        {% endif %}
+                    </a>
+                </li>
+            </ul>
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Workflow</span>
+            </h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "rq_dashboard.overview" and request.view_args['queue_name'] == "download_object" }}"
+                       href="{{ url_for('rq_dashboard.overview', queue_name='download_object') }}">
+                        <span data-feather="download"></span>
+                        Download Object
+                        <span style="display: none" id="download_object_pending_counter" class="badge badge-primary">0</span>
+                        <span style="display: none" class="badge badge-success">
+                            <span class="oi oi-cog"></span>
+                            <span id="download_object_processing_counter">0</span>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "rq_dashboard.overview" and request.view_args['queue_name'] == "create_sip" }}"
+                       href="{{ url_for('rq_dashboard.overview', queue_name='create_sip') }}">
+                        <span data-feather="package"></span>
+                        Create SIP
+                        <span style="display: none" id="create_sip_pending_counter" class="badge badge-primary">0</span>
+                        <span style="display: none" class="badge badge-success">
+                            <span class="oi oi-cog"></span>
+                            <span id="create_sip_processing_counter">0</span>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "rq_dashboard.overview" and request.view_args['queue_name'] == "submit_sip" }}"
+                       href="{{ url_for('rq_dashboard.overview', queue_name='submit_sip') }}">
+                        <span data-feather="upload"></span>
+                        Submit SIP
+                        <span style="display: none" id="submit_sip_pending_counter" class="badge badge-primary">0</span>
+                        <span style="display: none" class="badge badge-success">
+                            <span class="oi oi-cog"></span>
+                            <span id="submit_sip_processing_counter">0</span>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "rq_dashboard.overview" and request.view_args['queue_name'] == "confirm_sip" }}"
+                       href="{{ url_for('rq_dashboard.overview', queue_name='confirm_sip') }}">
+                        <span data-feather="check-circle"></span>
+                        Confirm SIP
+                        <span style="display: none" id="confirm_sip_pending_counter" class="badge badge-primary">0</span>
+                        <span style="display: none" class="badge badge-success">
+                            <span class="oi oi-cog"></span>
+                            <span id="confirm_sip_processing_counter">0</span>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "rq_dashboard.overview" and request.view_args['queue_name'] == "failed" }}"
+                       href="{{ url_for('rq_dashboard.overview', queue_name='failed') }}">
+                        <span data-feather="frown"></span>
+                        Failed
+                        <span style="display: none" id="failed_counter" class="badge badge-secondary badge-danger">0</span>
+                    </a>
+                </li>
+            </ul>
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Frozen objects</span>
+            </h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {{ "active" if request.url_rule.endpoint == "ui.manage_frozen_objects" }}"
+                       href="{{ url_for("ui.manage_frozen_objects") }}">
+                        <span data-feather="package"></span>
+                        Manage frozen objects
+                    </a>
+                    <a class="nav-link {{ "active" if request.url_rule.endpoint == "ui.frozen_object_statistics" }}"
+                       href="{{ url_for("ui.frozen_object_statistics") }}">
+                        <span data-feather="bar-chart"></span>
+                        Object statistics
+                    </a>
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "ui.unfreeze_objects" }}"
+                       href="{{ url_for("ui.unfreeze_objects") }}">
+                        <span data-feather="unlock"></span>
+                        Unfreeze objects
+                    </a>
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "ui.freeze_objects" }}"
+                       href="{{ url_for("ui.freeze_objects") }}">
+                        <span data-feather="lock"></span>
+                        Freeze objects
+                    </a>
+                </li>
+            </ul>
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                <span>Administration</span>
+            </h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {{ 'active' if request.url_rule.endpoint == "ui.enqueue_objects" }}"
+                       href="{{ url_for('ui.enqueue_objects' ) }}">
+                        <span data-feather="plus"></span>
+                        Enqueue objects
+                    </a>
+                    <a class="nav-link {{ 'active'
+                                          if request.url_rule.endpoint
+                                          in ["ui.manage_sips", "ui.view_single_sip"] }}"
+                       href="{{ url_for("ui.manage_sips") }}">
+                        <span data-feather="list"></span>
+                        Manage SIPs
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+</nav>

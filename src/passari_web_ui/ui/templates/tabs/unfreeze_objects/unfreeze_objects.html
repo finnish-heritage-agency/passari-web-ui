@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Unfreeze objects{% endblock title %}
+
+{% block content %}
+    {{ macros.content_title("Unfreeze objects") }}
+    <div class="alert alert-secondary">
+        Unfreeze multiple objects at once by using a freeze reason as a filter. For unfreezing individual objects, use <a href="{{ url_for("ui.manage_frozen_objects") }}">Manage frozen objects</a> instead.
+    </div>
+    <form method="POST" action="{{ url_for("ui.unfreeze_objects") }}">
+        {{ form.csrf_token }}
+        {{ macros.render_field(form.reason) }}
+        {{ macros.render_field(form.enqueue) }}
+        <button class="btn btn-primary" type="submit">Unfreeze</button>
+    </form>
+{% endblock content %}

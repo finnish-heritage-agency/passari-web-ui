@@ -1,0 +1,20 @@
+.progress-pending { background-color: #6E7FFF !important; }
+.progress-pending-hover { background-color: #8285F4 !important; }
+.progress-download-object { background-color: #A77500 !important; }
+.progress-create-sip { background-color: #F26520 !important; }
+.progress-submit-sip { background-color: #006AA1 !important; }
+.progress-submitted { background-color: #D84BCC !important; }
+.progress-confirm-sip { background-color: #FFE680 !important; }
+.progress-preserved { background-color: #008E3D !important; }
+.progress-rejected { background-color: #EB0681 !important; }
+.progress-failed { background-color: #8C344E !important; }
+.progress-frozen { background-color: #0061F2 !important; }
+
+.step-info-pill {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+}
+.step-info-box {
+    margin-top: 5px;
+}

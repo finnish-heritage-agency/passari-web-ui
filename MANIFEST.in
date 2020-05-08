@@ -1,0 +1,4 @@
+graft src/passari_web_ui/static
+graft src/passari_web_ui/templates
+graft src/passari_web_ui/ui/static
+graft src/passari_web_ui/ui/templates

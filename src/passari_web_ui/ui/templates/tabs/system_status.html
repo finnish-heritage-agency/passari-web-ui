@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% macro status_card(id, title, description) %}
+    <div class="card status-card">
+        <div class="card-body">
+            <h5 class="card-title">{{ title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+                <div>
+                    Last run: {{ g.system_status.get_heartbeat_natural_time(id) }}
+                </div>
+                <div>
+                    Expected interval: {{ g.system_status.get_interval_natural_time(id) }}
+                </div>
+                {% set is_heartbeat_recent = g.system_status.is_heartbeat_recent(id) %}
+                {% if is_heartbeat_recent is none %}
+                    <span class="badge badge-warning">No heartbeat recorded</span>
+                {% elif is_heartbeat_recent %}
+                    <span class="badge badge-success">Active</span>
+                {% elif not is_heartbeat_recent %}
+                    <span class="badge badge-danger">Inactive</span>
+                {% endif %}
+            </h6>
+            <p class="card-text">{{ description }}</p>
+        </div>
+    </div>
+{% endmacro %}
+
+{% block title %}System status{% endblock title %}
+
+{% block content %}
+    {{ macros.content_title("System status") }}
+    <div class="alert alert-secondary">
+        Examine the system status by checking the status of automated procedures. Procedures that show up as 'Inactive' have remained inactive for a longer time than expected, possibly due to an issue with the system.
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{ status_card("sync_objects", "Synchronize objects",
+                           "Synchronize MuseumPlus Object modules to detect new and changed objects.")
+            }}
+        </div>
+        <div class="col-md-4">
+            {{ status_card("sync_attachments", "Synchronize attachments",
+                           "Synchronize MuseumPlus Multimedia modules to detect new and changed attachments.")
+            }}
+        </div>
+        <div class="col-md-4">
+            {{ status_card("sync_hashes", "Synchronize hashes",
+                           "Synchronize MuseumPlus metadata for Object and Multimedia modules to determine which objects are eligible for preservation.")
+            }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{ status_card("sync_processed_sips", "Synchronize processed SIPs",
+                           "Check the DPRES service for accepted and rejected SIPs to finish the preservation workflow.")
+            }}
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{{ url_for('ui.static', filename='css/system-status.css') }}">
+{% endblock extra_head %}
