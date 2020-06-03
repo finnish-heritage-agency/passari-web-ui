@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 
 
+NAME = "passari_web_ui"
 DESCRIPTION = (
     "Web interface for Passari workflow"
 )
@@ -10,7 +11,7 @@ AUTHOR_EMAIL = "janne.pulkkinen@museovirasto.fi"
 
 
 setup(
-    name="passari_web_ui",
+    name=NAME,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     author=AUTHOR,
@@ -42,5 +43,14 @@ setup(
     ],
     python_requires=">=3.6",
     use_scm_version=True,
-    setup_requires=["setuptools_scm"]
+    command_options={
+        "build_sphinx": {
+            "project": ("setup.py", NAME),
+            "source_dir": ("setup.py", "docs")
+        }
+    },
+    setup_requires=["setuptools_scm", "sphinx", "sphinxcontrib-apidoc"],
+    extras_require={
+        "sphinx": ["sphinxcontrib-apidoc"]
+    }
 )

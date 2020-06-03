@@ -11,12 +11,11 @@ DEFAULT_CONFIG = """
 SECRET_KEY='test secret key DO NOT USE'
 SECURITY_URL_PREFIX='/web-ui/'
 # Replace this with a random string in production
-SECURITY_PASSWORD_SALT='pippuriJaSuola*1000'
+SECURITY_PASSWORD_SALT='replace with random string'
 SECURITY_SEND_REGISTER_EMAIL=false
 SECURITY_SEND_PASSWORD_CHANGE_EMAIL=false
 SECURITY_SEND_PASSWORD_RESET_EMAIL=false
 SECURITY_SEND_PASSWORD_RESET_NOTICE_EMAIL=false
-SECURITY_CHANGEABLE=true
 
 # URL to the MuseumPlus web UI. This is the base URL.
 # For example, the following URL should be valid:
