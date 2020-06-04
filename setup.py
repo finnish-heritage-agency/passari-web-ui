@@ -39,7 +39,8 @@ setup(
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
-        "Framework :: Flask"
+        "License :: OSI Approved :: MIT License",
+        "Framework :: Flask",
     ],
     python_requires=">=3.6",
     use_scm_version=True,
