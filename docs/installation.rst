@@ -5,7 +5,11 @@ Follow the installation instructions for *Passari* and *Passari Workflow* and en
 
 .. code-block:: console
 
-   $ pip install passari-web-ui
+   # You will need to install Passari and Passari Workflow first
+   $ pip install --upgrade git+https://github.com/finnish-heritage-agency/passari.git@1.0#egg=passari
+   $ pip install --upgrade git+https://github.com/finnish-heritage-agency/passari-workflow.git@1.0#egg=passari-workflow
+   # Replace 1.0 with the latest tagged version if available
+   $ pip install --upgrade git+https://github.com/finnish-heritage-agency/passari-web-ui.git@1.0#egg=passari-web-ui
 
 Create the database tables for the web UI using the following command:
 
