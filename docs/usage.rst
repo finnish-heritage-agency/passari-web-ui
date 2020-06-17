@@ -31,6 +31,10 @@ The workflow for an object may fail for multiple reasons: one of the attachments
 
 You can inspect the failed objects in the **Failed** tab.
 
+.. warning::
+
+   Jobs in the *Failed* queue will be removed automatically after one year has passed. Make sure to process the jobs before they are removed!
+
 Requeue the object
 ^^^^^^^^^^^^^^^^^^
 

@@ -34,7 +34,7 @@ This should also create the configuration file `~/.config/passari-web-ui/config.
 
    # URL to the MuseumPlus web UI. This is the base URL.
    # For example, the following URL should be valid:
-   # {MUSEUMPLUS_UI_URL}/object/1522
+   # {MUSEUMPLUS_UI_URL}/Object/1522
    MUSEUMPLUS_UI_URL=''
 
    # The expected heartbeat intervals for automated procedures plus an
