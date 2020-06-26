@@ -161,7 +161,9 @@ class TestNavbarStats:
 
 @pytest.mark.usefixtures("user")
 class TestListFrozenObjects:
-    def test_list_frozen_objects(self, session, client, museum_object_factory):
+    def test_list_frozen_objects(
+            self, session, client, museum_object_factory,
+            museum_package_factory):
         for i in range(0, 20):
             museum_object_factory(
                 id=i,
@@ -171,6 +173,14 @@ class TestListFrozenObjects:
                 freeze_source=FreezeSource.USER,
                 freeze_reason=f"Object {i} frozen"
             )
+
+        # Add a latest package only for the second object
+        museum_object_b = session.query(MuseumObject).get(1)
+        museum_object_b.latest_package = museum_package_factory(
+            id=10,
+            museum_object=museum_object_b
+        )
+        session.commit()
 
         # Get the first page
         result = client.get(
@@ -183,10 +193,12 @@ class TestListFrozenObjects:
         assert result["results"][0]["title"] == "Object 0"
         assert result["results"][0]["reason"] == "Object 0 frozen"
         assert result["results"][0]["source"] == "user"
+        assert result["results"][0]["latest_package_id"] is None
 
         assert result["results"][1]["id"] == 1
         assert result["results"][1]["title"] == "Object 1"
         assert result["results"][1]["reason"] == "Object 1 frozen"
+        assert result["results"][1]["latest_package_id"] == 10
 
         assert result["page_numbers"] == [1, 2]
         assert result["page_count"] == 2

@@ -215,6 +215,7 @@ def list_frozen_objects():
     for museum_object in pagination.items:
         items.append({
             "id": museum_object.id,
+            "latest_package_id": museum_object.latest_package_id,
             "title": museum_object.title,
             "source": (
                 "unknown" if not museum_object.freeze_source

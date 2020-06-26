@@ -56,6 +56,12 @@
                                         <i class="oi oi-lock-unlocked"></i>
                                         Unfreeze
                                     </a>
+                                    <a :href="viewUrlForPackage(result.latest_package_id)"
+                                        class="btn btn-sm btn-primary"
+                                        v-if="result.latest_package_id">
+                                        <i class="oi oi-eye"></i>
+                                        View latest SIP
+                                    </a>
                                     <a :href="`${MUSEUMPLUS_UI_URL}/Object/${result.id}`"
                                        target="_blank"
                                        class="btn btn-sm btn-info">

@@ -79,6 +79,11 @@ var app = new Vue({
             }
 
             return itemClass;
+        },
+        viewUrlForPackage: (packageId) => {
+            return URLMap["ui.manage_sips.view"].replace(
+                "PACKAGE_ID", packageId
+            );
         }
     }
 });
