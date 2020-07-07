@@ -4,16 +4,14 @@ from flask_security import login_required
 from sqlalchemy import func
 
 from passari_web_ui.db import db
-from passari_web_ui.ui.forms import (EnqueueObjectsForm,
-                                            FreezeObjectsForm,
-                                            ReenqueueObjectForm,
-                                            UnfreezeObjectsForm)
+from passari_web_ui.ui.forms import (EnqueueObjectsForm, FreezeObjectsForm,
+                                     ReenqueueObjectForm, UnfreezeObjectsForm)
 from passari_web_ui.ui.util import get_available_object_count
 from passari_workflow.db.models import (FreezeSource, MuseumObject,
-                                               MuseumPackage)
+                                        MuseumPackage)
 from passari_workflow.exceptions import WorkflowJobRunningError
-from passari_workflow.scripts.enqueue_objects import \
-    enqueue_objects as do_enqueue_objects
+from passari_workflow.scripts.deferred_enqueue_objects import \
+    deferred_enqueue_objects as do_deferred_enqueue_objects
 from passari_workflow.scripts.freeze_objects import \
     freeze_objects as do_freeze_objects
 from passari_workflow.scripts.reenqueue_object import \
@@ -100,9 +98,9 @@ def enqueue_objects():
     form = EnqueueObjectsForm()
 
     if form.validate_on_submit():
-        enqueued_count = do_enqueue_objects(form.object_count.data)
+        enqueued_count = do_deferred_enqueue_objects(form.object_count.data)
         flash(
-            f"{enqueued_count} object(s) were enqueued.",
+            f"{enqueued_count} object(s) will be enqueued.",
             category="enqueue_objects"
         )
         return redirect(url_for("ui.enqueue_objects_success"))

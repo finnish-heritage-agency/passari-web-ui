@@ -110,7 +110,7 @@ class TestEnqueueObjects:
             "/web-ui/enqueue-objects/", data={"object_count": "2"},
             follow_redirects=True
         )
-        assert b"2 object(s) were enqueued." in result.data
+        assert b"2 object(s) will be enqueued." in result.data
 
     def test_enqueue_objects_not_available(self, client):
         """
