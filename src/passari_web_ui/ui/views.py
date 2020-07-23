@@ -23,6 +23,24 @@ routes = Blueprint(
     "ui", __name__, template_folder="templates", static_folder="static")
 
 
+def _get_existing_freeze_reasons():
+    """
+    Get existing freeze reasons as a list for use in input auto-completion
+    """
+    results = (
+        db.session.query(MuseumObject.freeze_reason)
+        # NOTE: 'MuseumObject.frozen == True' filter should keep the query
+        # performant unless a lot of objects are frozen over time. In that
+        # case, the 'MuseumObject.freeze_reason' field should be indexed
+        # in passari-workflow.
+        .filter(MuseumObject.frozen == True)
+        .group_by(MuseumObject.freeze_reason)
+        .all()
+    )
+
+    return [result[0] for result in results]
+
+
 @routes.route("/")
 def home():
     """
@@ -163,6 +181,9 @@ def freeze_objects():
     # Prepopulate the "object IDs" field if GET parameter was provided
     form = FreezeObjectsForm(data={"object_ids": object_ids})
 
+    # Get a list of existing reasons to use for input auto-completion
+    freeze_reasons = _get_existing_freeze_reasons()
+
     if form.validate_on_submit():
         object_ids = [object_id for object_id in form.object_ids.data]
 
@@ -177,7 +198,9 @@ def freeze_objects():
             # running
             return render_template(
                 "tabs/freeze_objects/freeze_objects.html",
-                form=form, error=str(exc)
+                form=form,
+                freeze_reasons=freeze_reasons,
+                error=str(exc)
             )
 
         flash(
@@ -189,7 +212,8 @@ def freeze_objects():
 
     return render_template(
         "tabs/freeze_objects/freeze_objects.html",
-        form=form
+        form=form,
+        freeze_reasons=freeze_reasons
     )
 
 
@@ -212,6 +236,9 @@ def unfreeze_objects():
     # Prepopulate the "reason" field if GET parameter was provided
     form = UnfreezeObjectsForm(data={"reason": reason})
 
+    # Get a list of existing freeze reasons for input auto-completion
+    freeze_reasons = _get_existing_freeze_reasons()
+
     if form.validate_on_submit():
         unfrozen_count = do_unfreeze_objects(
             reason=form.reason.data,
@@ -225,7 +252,8 @@ def unfreeze_objects():
 
     return render_template(
         "tabs/unfreeze_objects/unfreeze_objects.html",
-        form=form
+        form=form,
+        freeze_reasons=freeze_reasons
     )
 
 

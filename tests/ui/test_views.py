@@ -250,6 +250,10 @@ class TestFreezeObjects:
             .count() == 2
         )
 
+        # Auto-completion entry can be found in the page
+        result = client.get("/web-ui/freeze-objects/")
+        assert b"Test reason" in result.data
+
     def test_freeze_objects_not_found(self, session, client):
         """
         Test freezing two objects that don't exist
@@ -302,6 +306,11 @@ class TestUnfreezeObjects:
         museum_object_factory(id=2, frozen=True, freeze_reason="Test reason B")
         museum_object_factory(id=3, frozen=True, freeze_reason="Test reason A")
         museum_object_factory(id=4, frozen=True, freeze_reason="Test reason B")
+
+        # Auto-completion entries can be found
+        result = client.get("/web-ui/unfreeze-objects/")
+        assert b"Test reason A" in result.data
+        assert b"Test reason B" in result.data
 
         # Objects 1 and 3 will be unfrozen
         result = client.post(

@@ -24,24 +24,29 @@
             {% set form_class="form-control is-invalid" if field.errors else "form-control" %}
             {% if field.type == "StringField" %}
                 <input class="{{ form_class }}" type="text"
+                       id="{{ field.id }}"
                        name="{{ field.name }}"
                        placeholder="{{ kwargs.get("placeholder", "") }}"
                        value="{% if field.data is not none %}{{ field.data }}{% endif %}">
             {% elif field.type == "PasswordField" %}
                 <input class="{{ form_class }}" type="password"
+                       id="{{ field.id }}"
                        name="{{ field.name }}"
                        placeholder="{{ kwargs.get("placeholder", "") }}">
             {% elif field.type == "BooleanField" %}
                 <input class="{{ form_class }}" type="checkbox"
+                       id="{{ field.id }}"
                        name="{{ field.name }}">
             {% elif field.type == "IntegerField" %}
                 <input class="{{ form_class }}" type="number"
+                       id="{{ field.id }}"
                        name="{{ field.name }}"
                        min="{{ kwargs.get("min", 0) }}"
                        max="{{ kwargs.get("max", 2**64) }}"
                        step="{{ kwargs.get("step", 1) }}">
             {% elif field.type in ("TextAreaField", "MultipleObjectIDField") %}
                 <textarea class="{{ form_class }}"
+                          id="{{ field.id }}"
                           name="{{ field.name }}"
                           placeholder="{{ kwargs.get("placeholder", "") }}">
                     {%- if field.data is not none %}{{ field.data }}{% endif -%}
