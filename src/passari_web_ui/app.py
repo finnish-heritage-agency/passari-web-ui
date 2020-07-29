@@ -9,7 +9,7 @@ from passari_web_ui.commands import create_db
 from passari_web_ui.config import get_flask_config
 from passari_web_ui.db import db
 from passari_web_ui.db.models import Role, User
-from passari_web_ui.ui.util import get_system_status
+from passari_web_ui.ui.utils import get_system_status
 from passari_workflow.config import CONFIG as WORKFLOW_CONFIG
 from passari_workflow.db.connection import get_connection_uri
 

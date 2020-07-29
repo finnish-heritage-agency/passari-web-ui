@@ -9,12 +9,12 @@ authentication tables and the workflow tables). If we wanted to add relations,
 (eg. who enqueued which object), it would be better to move these models
 into `passari-workflow` to keep migrations under one repository.
 """
+from flask_security import RoleMixin, UserMixin
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from flask_security import UserMixin, RoleMixin
-from sqlalchemy.orm import relationship, backref
-from sqlalchemy import Boolean, DateTime, Column, Integer, String, ForeignKey
-from passari_web_ui.db import db
+from sqlalchemy.orm import backref, relationship
 
+from passari_web_ui.db import db
 
 Base = declarative_base()
 Base.query = db.session.query_property()

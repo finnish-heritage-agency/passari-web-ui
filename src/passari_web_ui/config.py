@@ -66,5 +66,9 @@ def get_config(app_name, config_name, default_config):
 
 
 def get_flask_config():
+    """
+    Get Flask-related configuration as a dictionary. This can be appended into
+    the Flask app config parameter.
+    """
     config = get_config("passari-web-ui", "config.toml", DEFAULT_CONFIG)
     return toml.loads(config)["flask"]

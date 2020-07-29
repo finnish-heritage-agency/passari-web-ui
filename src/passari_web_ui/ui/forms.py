@@ -1,11 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import (BooleanField, Field, IntegerField, StringField,
-                            TextAreaField)
+from wtforms.fields import BooleanField, Field, IntegerField, StringField
 from wtforms.validators import InputRequired, ValidationError
 from wtforms.widgets import TextArea
 
 from passari_web_ui.db import db
-from passari_web_ui.ui.util import get_available_object_count
+from passari_web_ui.ui.utils import get_available_object_count
 from passari_workflow.db.models import MuseumObject
 
 

@@ -1,12 +1,11 @@
-from flask import (Blueprint, flash, g, redirect, render_template, request,
+from flask import (Blueprint, flash, redirect, render_template, request,
                    url_for)
-from flask_security import login_required
 from sqlalchemy import func
 
 from passari_web_ui.db import db
 from passari_web_ui.ui.forms import (EnqueueObjectsForm, FreezeObjectsForm,
                                      ReenqueueObjectForm, UnfreezeObjectsForm)
-from passari_web_ui.ui.util import get_available_object_count
+from passari_web_ui.ui.utils import get_available_object_count
 from passari_workflow.db.models import (FreezeSource, MuseumObject,
                                         MuseumPackage)
 from passari_workflow.exceptions import WorkflowJobRunningError

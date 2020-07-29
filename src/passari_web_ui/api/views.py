@@ -1,15 +1,12 @@
 import json
-import time
 
 from flask import Blueprint, jsonify, request
-from flask_security import login_required
 from sqlalchemy import and_, or_
 
 from passari_web_ui.db import db
 from passari_workflow.db.models import MuseumObject, MuseumPackage
-from passari_workflow.queue.queues import (QueueType,
-                                                  get_object_id2queue_map,
-                                                  get_queue)
+from passari_workflow.queue.queues import (QueueType, get_object_id2queue_map,
+                                           get_queue)
 from passari_workflow.redis.connection import get_redis_connection
 from passari_workflow.scripts.reenqueue_object import \
     reenqueue_object as do_reenqueue_object
@@ -36,10 +33,7 @@ def to_bool(s):
         # Just return the parameter if it's already a boolean
         return s
 
-    try:
-        return STRING_TO_BOOLEAN[s]
-    except KeyError:
-        return None
+    return STRING_TO_BOOLEAN.get(s, None)
 
 
 @routes.route("/overview-stats")
@@ -369,10 +363,10 @@ def reenqueue_object():
         # Object hasn't been rejected yet, or it hasn't been rejected at all
         error = str(exc)
 
-    if not error:
-        return jsonify({"success": True})
-    else:
+    if error:
         return jsonify({"success": False, "error": error})
+
+    return jsonify({"success": True})
 
 
 @routes.route("/unfreeze-objects", methods=["POST"])
